@@ -2,6 +2,7 @@ package discord_bot.rubis;
 
 import java.awt.Color;
 import java.io.File;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -14,12 +15,13 @@ public class FicheEspece {
 	private Color color;
 	private File image;
 	
-	public FicheEspece(String title, String description, List<Field> fields, Color color, File image) {
+	public FicheEspece(String title, String description, ArrayList<Field> fields, Color color, File image) {
 		this.title = title;
 		this.description = description;
 		this.fields = fields;
 		this.color = color;
 		this.image = image;
+		createCommand();
 	}
 	
 	public EmbedBuilder createEmbed() {
@@ -55,7 +57,17 @@ public class FicheEspece {
 	}
 	
 	public void setOneField(int index, String title, String description) {
-		
+		fields.get(index).setTitle(title);
+		fields.get(index).setDescription(description);
+	}
+	
+	private void createCommand() {
+		String[] testTitle = title.toLowerCase().split(" ");
+		String command = "!";
+		for(String word : testTitle) {
+			command+=word;
+		}
+		CommandFicheEspece.getInstance().addCommand(command, this);
 	}
 
 }

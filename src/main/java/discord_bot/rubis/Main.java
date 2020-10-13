@@ -2,6 +2,12 @@ package discord_bot.rubis;
 
 import java.awt.Color;
 import java.io.File;
+import java.net.MalformedURLException;
+import java.net.URI;
+import java.net.URISyntaxException;
+import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
@@ -13,7 +19,7 @@ import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 
 public class Main {
 	
-	public static void main (String[] args) {
+	public static void main (String[] args) throws URISyntaxException, MalformedURLException {
 		
 		FallbackLoggerConfiguration.setDebug(true);
 		FallbackLoggerConfiguration.setTrace(true);
@@ -21,13 +27,10 @@ public class Main {
 		DiscordApi api = new DiscordApiBuilder().setToken(args[0]).login().join();
 	
 		final TextChannel CHANNEL_GENERAL = api.getTextChannelById("391928375570071555").get();
-		
-		EmbedBuilder embed = new EmbedBuilder()
-				.setTitle("Le Toucan")
-				.setDescription("Le toucan est un oiseau vivant en Amazonie.")
-				.addField("Régime alimentaire :", "Essentiellement frugivore.")
-				.setColor(Color.GREEN)
-				.setImage(new File("C:/Users/Oydrey/Pictures/toucan.jpg"));
+
+		List<Field> listField = new ArrayList<>();
+		listField.add(new Field("Régime alimentaire :", "Essentiellement frugivore"));
+		FicheEspece ficheToucan = new FicheEspece("Toucan", "Le toucan est un oiseau vivant en Amazonie", (ArrayList) listField, Color.GREEN, new File("C:/Users/Oydrey/Pictures/toucan.jpg"));
 		
 		EmbedBuilder commandes = new EmbedBuilder()
 				.setTitle("Commandes")
@@ -41,9 +44,14 @@ public class Main {
 		api.updateActivity("Rubis est de retour !");
 		
 		api.addMessageCreateListener(event -> {
-			if (event.getMessageContent().equalsIgnoreCase("!toucan")) {
-				event.getChannel().sendMessage(embed);
-			}
+			String message = event.getMessageContent();
+			CommandFicheEspece.getInstance().getCommands().forEach((k, v) -> {		
+				if (message.equals(k)) {
+					EmbedBuilder embed = v.createEmbed();
+					event.getChannel().sendMessage(embed);
+				}
+			});
+			
 		});
 		
 		api.addMessageCreateListener(event -> {

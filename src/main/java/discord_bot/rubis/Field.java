@@ -17,5 +17,13 @@ public class Field {
 	public String getDescription() {
 		return description;
 	}
+	
+	public void setTitle(String newTitle) {
+		title = newTitle;
+	}
+	
+	public void setDescription(String newDescription) {
+		description = newDescription;
+	}
 
 }
