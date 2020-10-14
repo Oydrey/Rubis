@@ -7,13 +7,16 @@ import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
+import java.util.Optional;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.TextChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 
@@ -49,6 +52,11 @@ public class Main {
 		
 		api.addMessageCreateListener(event -> {
 			BotEvent.afficheCommandesBot(event);
+		});
+		
+		api.addMessageCreateListener(event -> {
+			Server server = event.getServer().get();
+			Collection<User> users = server.getMembers();
 		});
 			
 	}
