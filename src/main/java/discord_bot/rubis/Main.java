@@ -55,8 +55,30 @@ public class Main {
 		});
 		
 		api.addMessageCreateListener(event -> {
-			Server server = event.getServer().get();
-			Collection<User> users = server.getMembers();
+			EmbedBuilder embed = new EmbedBuilder();
+			embed.setTitle("Test");
+			embed.addInlineField("", "nombre 1");
+			embed.addInlineField("2", "nombre 2");
+			embed.addInlineField("3", "nombre 3");
+			embed.addInlineField("4", "nombre 4");
+			embed.setColor(Color.RED);
+			embed.setImage(new File("C:/Users/Oydrey/Pictures/toucan.jpg"));
+			if (event.getMessageContent().equalsIgnoreCase("!test"))  {				
+				event.getChannel().sendMessage(embed);
+			}
+		});
+		
+		api.addMessageCreateListener(event -> {
+			if (event.getMessageContent().equalsIgnoreCase("!status"))  {				
+				Server server = event.getServer().get();
+				Collection<User> users = server.getMembers();
+				int number = server.getMemberCount();
+				System.out.println(number);
+				for (User user : users) {
+					String status = user.getStatus().getStatusString();
+					System.out.println(user.getName() + " : " + status);
+				}
+			}			
 		});
 			
 	}
