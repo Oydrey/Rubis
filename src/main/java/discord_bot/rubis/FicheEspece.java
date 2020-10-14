@@ -14,13 +14,15 @@ public class FicheEspece {
 	private List<Field> fields;
 	private Color color;
 	private File image;
+	private String descCommand;
 	
-	public FicheEspece(String title, String description, ArrayList<Field> fields, Color color, File image) {
+	public FicheEspece(String title, String description, ArrayList<Field> fields, Color color, File image, String descCommand) {
 		this.title = title;
 		this.description = description;
 		this.fields = fields;
 		this.color = color;
 		this.image = image;
+		this.descCommand = descCommand;
 		createCommand();
 	}
 	
@@ -68,6 +70,7 @@ public class FicheEspece {
 			command+=word;
 		}
 		CommandFicheEspece.getInstance().addCommand(command, this);
+		ListeCommandeRubis.getInstance().addCommande(command, descCommand);
 	}
 
 }

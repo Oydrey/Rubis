@@ -19,7 +19,7 @@ import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 
 public class Main {
 	
-	public static void main (String[] args) throws URISyntaxException, MalformedURLException {
+	public static void main (String[] args) {
 		
 		FallbackLoggerConfiguration.setDebug(true);
 		FallbackLoggerConfiguration.setTrace(true);
@@ -30,52 +30,25 @@ public class Main {
 
 		List<Field> listField = new ArrayList<>();
 		listField.add(new Field("Régime alimentaire :", "Essentiellement frugivore"));
-		FicheEspece ficheToucan = new FicheEspece("Toucan", "Le toucan est un oiseau vivant en Amazonie", (ArrayList) listField, Color.GREEN, new File("C:/Users/Oydrey/Pictures/toucan.jpg"));
+		FicheEspece ficheToucan = new FicheEspece("Toucan", "Le toucan est un oiseau vivant en Amazonie", (ArrayList) listField, Color.GREEN, new File("C:/Users/Oydrey/Pictures/toucan.jpg"), "Affiche la fiche espèce du toucan");
 		
-		EmbedBuilder commandes = new EmbedBuilder()
-				.setTitle("Commandes")
-				.setDescription("Les commandes de Rubis.")
-				.addField("!toucan : ", "Fiche de l'espèce : toucan")
-				.addField("Salut", "Rubis te répond Salut @tonPseudo")
-				.addField("!commandes", "Donne la liste de toutes les commandes")
-				.setColor(Color.RED)
-				.setImage(new File("C:/Users/Oydrey/Desktop/bot_discord/Rubis.jpg"));
+		List<Field> listFieldTapir = new ArrayList<>();
+		listFieldTapir.add(new Field("Régime alimentaire :", "Herbivore & frugivore"));
+		listFieldTapir.add( new Field("Relation avec l'Homme :", "Neutre"));
+		FicheEspece ficheTapir = new FicheEspece("Tapir malais", "Le tapir malais est un mammifère vivant en Asie, plus précisement en Malaisie", (ArrayList) listFieldTapir, Color.GREEN, new File("C:/Users/Oydrey/Pictures/tapir.jpg"), "Affiche la fiche espèce du tapir malais");
 		
 		api.updateActivity("Rubis est de retour !");
 		
 		api.addMessageCreateListener(event -> {
-			String message = event.getMessageContent();
-			CommandFicheEspece.getInstance().getCommands().forEach((k, v) -> {		
-				if (message.equals(k)) {
-					EmbedBuilder embed = v.createEmbed();
-					event.getChannel().sendMessage(embed);
-				}
-			});
-			
+			BotEvent.afficheFicheEspece(event);
 		});
 		
 		api.addMessageCreateListener(event -> {
-			if (event.getMessageContent().equalsIgnoreCase("Salut"))  {
-				Message  message = event.getMessage();
-				User user = message.getUserAuthor().get();
-				String mentionTag = user.getMentionTag();
-				System.out.println(mentionTag);
-				event.getChannel().sendMessage("Salut " + mentionTag);
-			}
+			BotEvent.answerSalut(event);
 		});
 		
 		api.addMessageCreateListener(event -> {
-			if (event.getMessageContent().equalsIgnoreCase("!commandes")) {
-				event.getChannel().sendMessage(commandes);
-			}
-		});
-		
-		api.addMessageCreateListener(event -> {
-			String contentMessage = event.getMessageContent();
-			String[] splitMessage = contentMessage.split(" ");
-			if (splitMessage[0].equals("!musique")) {
-				
-			}
+			BotEvent.afficheCommandesBot(event);
 		});
 			
 	}
