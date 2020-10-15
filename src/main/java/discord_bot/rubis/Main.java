@@ -10,10 +10,12 @@ import java.util.ArrayList;
 import java.util.Collection;
 import java.util.List;
 import java.util.Optional;
+import java.util.Set;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.TextChannel;
+import org.javacord.api.entity.intent.Intent;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
@@ -27,8 +29,8 @@ public class Main {
 		FallbackLoggerConfiguration.setDebug(true);
 		FallbackLoggerConfiguration.setTrace(true);
 		
-		DiscordApi api = new DiscordApiBuilder().setToken(args[0]).login().join();
-	
+		DiscordApi api = new DiscordApiBuilder().setToken(args[0]).setAllIntents().login().join();
+		
 		final TextChannel CHANNEL_GENERAL = api.getTextChannelById("391928375570071555").get();
 
 		List<Field> listField = new ArrayList<>();
@@ -55,30 +57,7 @@ public class Main {
 		});
 		
 		api.addMessageCreateListener(event -> {
-			EmbedBuilder embed = new EmbedBuilder();
-			embed.setTitle("Test");
-			embed.addInlineField("", "nombre 1");
-			embed.addInlineField("2", "nombre 2");
-			embed.addInlineField("3", "nombre 3");
-			embed.addInlineField("4", "nombre 4");
-			embed.setColor(Color.RED);
-			embed.setImage(new File("C:/Users/Oydrey/Pictures/toucan.jpg"));
-			if (event.getMessageContent().equalsIgnoreCase("!test"))  {				
-				event.getChannel().sendMessage(embed);
-			}
-		});
-		
-		api.addMessageCreateListener(event -> {
-			if (event.getMessageContent().equalsIgnoreCase("!status"))  {				
-				Server server = event.getServer().get();
-				Collection<User> users = server.getMembers();
-				int number = server.getMemberCount();
-				System.out.println(number);
-				for (User user : users) {
-					String status = user.getStatus().getStatusString();
-					System.out.println(user.getName() + " : " + status);
-				}
-			}			
+			BotEvent.listUserStatus(event);			
 		});
 			
 	}
