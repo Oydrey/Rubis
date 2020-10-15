@@ -35,12 +35,15 @@ public class Main {
 
 		List<Field> listField = new ArrayList<>();
 		listField.add(new Field("Régime alimentaire :", "Essentiellement frugivore"));
-		FicheEspece ficheToucan = new FicheEspece("Toucan", "Le toucan est un oiseau vivant en Amazonie", (ArrayList) listField, Color.GREEN, new File("C:/Users/Oydrey/Pictures/toucan.jpg"), "Affiche la fiche espèce du toucan");
+		FicheEspece ficheToucan = new FicheEspece("Toucan", "Le toucan est un oiseau vivant en Amazonie", (ArrayList) listField, new File("C:/Users/Oydrey/Pictures/toucan.jpg"), "Affiche la fiche espèce du toucan");
 		
 		List<Field> listFieldTapir = new ArrayList<>();
 		listFieldTapir.add(new Field("Régime alimentaire :", "Herbivore & frugivore"));
 		listFieldTapir.add( new Field("Relation avec l'Homme :", "Neutre"));
-		FicheEspece ficheTapir = new FicheEspece("Tapir malais", "Le tapir malais est un mammifère vivant en Asie, plus précisement en Malaisie", (ArrayList) listFieldTapir, Color.GREEN, new File("C:/Users/Oydrey/Pictures/tapir.jpg"), "Affiche la fiche espèce du tapir malais");
+		FicheEspece ficheTapir = new FicheEspece("Tapir malais", "Le tapir malais est un mammifère vivant en Asie, plus précisement en Malaisie", (ArrayList) listFieldTapir, new File("C:/Users/Oydrey/Pictures/tapir.jpg"), "Affiche la fiche espèce du tapir malais");
+		
+		ListeCommandeRubis.getInstance().initCommande("!status", "Retourne la liste des membres du serveur en fonction de leur statut ");
+		ListeCommandeRubis.getInstance().initCommande("Salut", "Rubis te répond salut");
 		
 		api.updateActivity("Rubis est de retour !");
 		

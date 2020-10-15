@@ -15,6 +15,7 @@ public class BotEvent {
 
 	public static void afficheCommandesBot(MessageCreateEvent event) {
 		if (event.getMessageContent().equalsIgnoreCase("!commandes")) {
+			event.getMessage().delete();
 			EmbedBuilder embed = ListeCommandeRubis.getInstance().createEmbed();
 			event.getChannel().sendMessage(embed);
 		}
@@ -24,6 +25,7 @@ public class BotEvent {
 		String message = event.getMessageContent();
 		CommandFicheEspece.getInstance().getCommands().forEach((k, v) -> {		
 			if (message.equals(k)) {
+				event.getMessage().delete();
 				EmbedBuilder embed = v.createEmbed();
 				event.getChannel().sendMessage(embed);
 			}
@@ -40,25 +42,36 @@ public class BotEvent {
 	}
 	
 	public static void listUserStatus(MessageCreateEvent event) {
-		if (event.getMessageContent().equalsIgnoreCase("!status"))  {				
+		if (event.getMessageContent().equalsIgnoreCase("!status"))  {
+			event.getMessage().delete();
 			Server server = event.getServer().get();
 			Collection<User> users = server.getMembers();
-			Map<String, String> usersStatus = new HashMap<>();
-			for (User user : users) {
-				usersStatus.put(user.getName(), user.getStatus().getStatusString());
-			}
-			EmbedBuilder embed = new EmbedBuilder()
-					.setTitle("Liste des membres")
-					.setDescription("La liste des membres du serveur en fonction de leur statut")
-					.setColor(Color.YELLOW);
 			String statusOnline = "";
 			String statusDnd = "";
 			String statusIdle = "";
 			String statusOffline = "";
-			
-			usersStatus.forEach((k, v) -> {		
-
-			});
+			for (User user : users) {
+				switch (user.getStatus().getStatusString()) {
+				case "online":
+					statusOnline+=user.getName() + "\n";
+					break;
+				case "dnd":
+					statusDnd+=user.getName() + "\n";
+					break;
+				case "idle":
+					statusIdle+=user.getName() + "\n";
+					break;
+				case "offline":
+					statusOffline+=user.getName() + "\n";
+					break;
+				default:
+					break;		
+				}
+			}
+			EmbedBuilder embed = EmbedBuilderBase.createBaseEmbed();
+					
+			embed.setTitle("Liste des membres")
+				 .setDescription("La liste des membres du serveur en fonction de leur statut");
 						
 			embed.addInlineField("En ligne", statusOnline);
 			embed.addInlineField("Absent", statusIdle);

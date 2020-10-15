@@ -29,8 +29,12 @@ public class ListeCommandeRubis {
 		return listeCommande;
 	}
 	
+	public void initCommande(String title, String desc) {
+		listeCommande.put(title, desc);
+	}
+	
 	public EmbedBuilder createEmbed() {
-		EmbedBuilder embed = new EmbedBuilder();
+		EmbedBuilder embed = EmbedBuilderBase.createBaseEmbed();
 		
 		embed.setTitle("Liste des commandes de Rubis");
 		embed.setDescription("Les commandes de Rubis commencent par ! suivi du nom de la commande");
@@ -38,9 +42,8 @@ public class ListeCommandeRubis {
 		listeCommande.forEach((k, v) -> {		
 			embed.addField(k, v);
 		});
-		
-		embed.setColor(Color.RED);
-		embed.setImage(new File("C:/Users/Oydrey/Pictures/rubis.jpg"));
+
+		embed.setThumbnail(new File("C:/Users/Oydrey/Pictures/toucan.jpg"));
 		
 		return embed;
 	}

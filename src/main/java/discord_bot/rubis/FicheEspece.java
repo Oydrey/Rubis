@@ -12,22 +12,20 @@ public class FicheEspece {
 	private String title;
 	private String description;
 	private List<Field> fields;
-	private Color color;
 	private File image;
 	private String descCommand;
 	
-	public FicheEspece(String title, String description, ArrayList<Field> fields, Color color, File image, String descCommand) {
+	public FicheEspece(String title, String description, ArrayList<Field> fields, File image, String descCommand) {
 		this.title = title;
 		this.description = description;
 		this.fields = fields;
-		this.color = color;
 		this.image = image;
 		this.descCommand = descCommand;
 		createCommand();
 	}
 	
 	public EmbedBuilder createEmbed() {
-		EmbedBuilder embed = new EmbedBuilder();
+		EmbedBuilder embed = EmbedBuilderBase.createBaseEmbed();
 		
 		embed.setTitle(title);
 		embed.setDescription(description);
@@ -36,7 +34,6 @@ public class FicheEspece {
 			embed.addField(field.getTitle(), field.getDescription());
 		}
 		
-		embed.setColor(color);
 		embed.setImage(image);
 		
 		return embed;
@@ -50,10 +47,6 @@ public class FicheEspece {
 		this.description = description;
 	}
 
-	public void setColor(Color color) {
-		this.color = color;
-	}
-
 	public void setImage(File image) {
 		this.image = image;
 	}
@@ -62,7 +55,7 @@ public class FicheEspece {
 		fields.get(index).setTitle(title);
 		fields.get(index).setDescription(description);
 	}
-	
+
 	private void createCommand() {
 		String[] testTitle = title.toLowerCase().split(" ");
 		String command = "!";
