@@ -1,9 +1,6 @@
 package discord_bot.rubis;
 
-import java.awt.Color;
 import java.util.Collection;
-import java.util.HashMap;
-import java.util.Map;
 
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
@@ -50,24 +47,38 @@ public class BotEvent {
 			String statusDnd = "";
 			String statusIdle = "";
 			String statusOffline = "";
+			int statusOnlineTotal = 0;
+			int statusDndTotal = 0;
+			int statusIdleTotal = 0;
+			int statusOfflineTotal = 0;
 			for (User user : users) {
 				switch (user.getStatus().getStatusString()) {
 				case "online":
-					statusOnline+=user.getName() + "\n";
+					statusOnline+="- " + user.getName() + "\n";
+					statusOnlineTotal+=1;
 					break;
 				case "dnd":
-					statusDnd+=user.getName() + "\n";
+					statusDnd+="- " + user.getName() + "\n";
+					statusDndTotal+=1;
 					break;
 				case "idle":
-					statusIdle+=user.getName() + "\n";
+					statusIdle+="- " + user.getName() + "\n";
+					statusIdleTotal+=1;
 					break;
 				case "offline":
-					statusOffline+=user.getName() + "\n";
+					statusOffline+="- " + user.getName() + "\n";
+					statusOfflineTotal+=1;
 					break;
 				default:
 					break;		
 				}
-			}
+			}			
+			
+			statusOnline+="Total : " + statusOnlineTotal;
+			statusDnd+="Total : " + statusDndTotal;
+			statusIdle+="Total : " + statusIdleTotal;
+			statusOffline+="Total : " + statusOfflineTotal;
+			
 			EmbedBuilder embed = EmbedBuilderBase.createBaseEmbed();
 					
 			embed.setTitle("Liste des membres")

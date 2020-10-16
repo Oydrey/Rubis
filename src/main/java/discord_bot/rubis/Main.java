@@ -1,25 +1,12 @@
 package discord_bot.rubis;
 
-import java.awt.Color;
 import java.io.File;
-import java.net.MalformedURLException;
-import java.net.URI;
-import java.net.URISyntaxException;
-import java.net.URL;
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.List;
-import java.util.Optional;
-import java.util.Set;
 
 import org.javacord.api.DiscordApi;
 import org.javacord.api.DiscordApiBuilder;
 import org.javacord.api.entity.channel.TextChannel;
-import org.javacord.api.entity.intent.Intent;
-import org.javacord.api.entity.message.Message;
-import org.javacord.api.entity.message.embed.EmbedBuilder;
-import org.javacord.api.entity.server.Server;
-import org.javacord.api.entity.user.User;
 import org.javacord.api.util.logging.FallbackLoggerConfiguration;
 
 public class Main {
