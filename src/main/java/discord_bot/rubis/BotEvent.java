@@ -141,13 +141,12 @@ public class BotEvent {
 						    
 							@Override
 							public void noMatches() {
-								// TODO Auto-generated method stub
+								event.getChannel().sendMessage("La musique n'a pas été trouvée.");
 								
 							}
 							@Override
 							public void loadFailed(FriendlyException exception) {
-								// TODO Auto-generated method stub
-								
+								event.getChannel().sendMessage("La musique n'a pas pu être chargée : " + exception.toString());
 							}
 						};
 						
