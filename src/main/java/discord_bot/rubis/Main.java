@@ -31,6 +31,7 @@ public class Main {
 		
 		ListeCommandeRubis.getInstance().initCommande("!status", "Retourne la liste des membres du serveur en fonction de leur statut ");
 		ListeCommandeRubis.getInstance().initCommande("Salut", "Rubis te répond salut");
+		ListeCommandeRubis.getInstance().initCommande("!musique url_youtube", "Rubis joue la musique Youtube passée en URL dans le salon vocal Musique");
 		
 		api.updateActivity("Rubis est de retour !");
 		
@@ -48,6 +49,10 @@ public class Main {
 		
 		api.addMessageCreateListener(event -> {
 			BotEvent.listUserStatus(event);			
+		});
+		
+		api.addMessageCreateListener(event -> {
+			BotEvent.playMusic(event);
 		});
 			
 	}

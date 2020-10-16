@@ -41,8 +41,6 @@ public class ListeCommandeRubis {
 		listeCommande.forEach((k, v) -> {		
 			embed.addField(k, v);
 		});
-
-		embed.setThumbnail(new File("C:/Users/Oydrey/Pictures/toucan.jpg"));
 		
 		return embed;
 	}

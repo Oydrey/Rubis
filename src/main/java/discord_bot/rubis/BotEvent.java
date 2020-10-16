@@ -1,12 +1,24 @@
 package discord_bot.rubis;
 
 import java.util.Collection;
+import java.util.regex.*;
 
+import org.javacord.api.audio.AudioSource;
+import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
+
+import com.sedmelluq.discord.lavaplayer.player.AudioLoadResultHandler;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayer;
+import com.sedmelluq.discord.lavaplayer.player.AudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.player.DefaultAudioPlayerManager;
+import com.sedmelluq.discord.lavaplayer.source.youtube.YoutubeAudioSourceManager;
+import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
+import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
+import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
 public class BotEvent {
 
@@ -90,7 +102,61 @@ public class BotEvent {
 			embed.addInlineField("Hors ligne", statusOffline);
 			
 			event.getChannel().sendMessage(embed);
-		}
+		}	
 	} 
+	
+	public static void playMusic(MessageCreateEvent event) {
+		String[] splitMessage = event.getMessageContent().split(" ");		
+		if (splitMessage.length == 2) {
+			Pattern pattern = Pattern.compile("https?:?/?/www?.youtube?.com?/watch?\\?v?=");
+			Matcher matcher = pattern.matcher(splitMessage[1]);
+			boolean find = matcher.find();
+			if ((splitMessage[0].equals("!musique")) && find) {
+				event.getMessage().delete();
+				Collection<ServerVoiceChannel> channels = event.getApi().getServerVoiceChannelsByName("Musique");	
+				
+				for (ServerVoiceChannel channel : channels) {
+					channel.connect().thenAccept(audioConnection -> {
+						// Create a player manager
+						AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+						playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+						AudioPlayer player = playerManager.createPlayer();
+
+						// Create an audio source and add it to the audio connection's queue
+						AudioSource source = new LavaplayerAudioSource(event.getApi(), player);
+						audioConnection.setAudioSource(source);
+
+						AudioLoadResultHandler audioLoadResultHandler = new AudioLoadResultHandler() {
+						    @Override
+						    public void trackLoaded(AudioTrack track) {
+						        player.playTrack(track);
+						    }
+
+						    @Override
+						    public void playlistLoaded(AudioPlaylist playlist) {
+						        for (AudioTrack track : playlist.getTracks()) {
+						            player.playTrack(track);
+						        }
+						    }
+						    
+							@Override
+							public void noMatches() {
+								// TODO Auto-generated method stub
+								
+							}
+							@Override
+							public void loadFailed(FriendlyException exception) {
+								// TODO Auto-generated method stub
+								
+							}
+						};
+						
+						// You can now use the AudioPlayer like you would normally do with Lavaplayer, e.g.,
+						playerManager.loadItem(splitMessage[1], audioLoadResultHandler);
+					});
+				}
+			}
+		}		
+	}
 	
 }
