@@ -1,6 +1,5 @@
 package discord_bot.rubis;
 
-import java.io.File;
 import java.util.HashMap;
 import java.util.Map;
 
