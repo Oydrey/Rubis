@@ -52,7 +52,11 @@ public class Main {
 		});
 		
 		api.addMessageCreateListener(event -> {
-			BotEvent.playMusic(event);
+			try {
+				BotEvent.playMusic(event);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		});
 			
 	}

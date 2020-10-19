@@ -105,57 +105,67 @@ public class BotEvent {
 		}	
 	} 
 	
-	public static void playMusic(MessageCreateEvent event) {
-		String[] splitMessage = event.getMessageContent().split(" ");		
-		if (splitMessage.length == 2) {
-			Pattern pattern = Pattern.compile("https?:?/?/www?.youtube?.com?/watch?\\?v?=");
-			Matcher matcher = pattern.matcher(splitMessage[1]);
-			boolean find = matcher.find();
-			if ((splitMessage[0].equals("!musique")) && find) {
-				event.getMessage().delete();
-				Collection<ServerVoiceChannel> channels = event.getApi().getServerVoiceChannelsByName("Musique");	
-				
-				for (ServerVoiceChannel channel : channels) {
-					channel.connect().thenAccept(audioConnection -> {
-						// Create a player manager
-						AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
-						playerManager.registerSourceManager(new YoutubeAudioSourceManager());
-						AudioPlayer player = playerManager.createPlayer();
-
-						// Create an audio source and add it to the audio connection's queue
-						AudioSource source = new LavaplayerAudioSource(event.getApi(), player);
-						audioConnection.setAudioSource(source);
-
-						AudioLoadResultHandler audioLoadResultHandler = new AudioLoadResultHandler() {
-						    @Override
-						    public void trackLoaded(AudioTrack track) {
-						        player.playTrack(track);
-						    }
-
-						    @Override
-						    public void playlistLoaded(AudioPlaylist playlist) {
-						        for (AudioTrack track : playlist.getTracks()) {
-						            player.playTrack(track);
-						        }
-						    }
-						    
-							@Override
-							public void noMatches() {
-								event.getChannel().sendMessage("La musique n'a pas été trouvée.");
-								
-							}
-							@Override
-							public void loadFailed(FriendlyException exception) {
-								event.getChannel().sendMessage("La musique n'a pas pu être chargée : " + exception.toString());
-							}
-						};
-						
-						// You can now use the AudioPlayer like you would normally do with Lavaplayer, e.g.,
-						playerManager.loadItem(splitMessage[1], audioLoadResultHandler);
-					});
+	public static void playMusic(MessageCreateEvent event) throws Exception {
+		String[] splitMessage = event.getMessageContent().split(" ");	
+		
+		if ((splitMessage[0].equals("!musique")) || (splitMessage[0].equals("!playlist"))) {
+			String audio;
+			if (splitMessage.length == 2) {
+				Pattern pattern = Pattern.compile("https?:?/?/www?.youtube?.com?/watch?\\?v?=");
+				Matcher matcher = pattern.matcher(splitMessage[1]);
+				boolean find = matcher.find();
+				if (find) {
+					audio = splitMessage[1];
+				} else {
+					throw new Exception("The URL is not valable");
 				}
+			} else {
+				//TODO playlist
+				audio = "";
 			}
-		}		
+			Collection<ServerVoiceChannel> channels = event.getApi().getServerVoiceChannelsByName("Musique");	
+			
+			for (ServerVoiceChannel channel : channels) {
+				channel.connect().thenAccept(audioConnection -> {
+					// Create a player manager
+					AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+					playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+					AudioPlayer player = playerManager.createPlayer();
+
+					// Create an audio source and add it to the audio connection's queue
+					AudioSource source = new LavaplayerAudioSource(event.getApi(), player);
+					audioConnection.setAudioSource(source);
+
+					AudioLoadResultHandler audioLoadResultHandler = new AudioLoadResultHandler() {
+					    @Override
+					    public void trackLoaded(AudioTrack track) {
+					        player.playTrack(track);
+					    }
+
+					    @Override
+					    public void playlistLoaded(AudioPlaylist playlist) {
+					        for (AudioTrack track : playlist.getTracks()) {
+					            player.playTrack(track);
+					        }
+					    }
+					    
+						@Override
+						public void noMatches() {
+							event.getChannel().sendMessage("La musique n'a pas été trouvée.");
+							
+						}
+						@Override
+						public void loadFailed(FriendlyException exception) {
+							event.getChannel().sendMessage("La musique n'a pas pu être chargée : " + exception.toString());
+						}
+					};
+					
+					// You can now use the AudioPlayer like you would normally do with Lavaplayer, e.g.,
+					playerManager.loadItem(audio, audioLoadResultHandler);
+				});
+			}
+		}
+		
 	}
 	
 }
