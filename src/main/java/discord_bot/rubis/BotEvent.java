@@ -84,9 +84,10 @@ public class BotEvent {
 		String content = event.getMessageContent();
 		char firstChar = content.charAt(0);
 		if (firstChar == '!') {
-			if (!(ListeCommandeRubis.getInstance().getListeCommande().containsKey(content))) {
+			String[] contentSplit = content.split(" ");
+			if (!(ListeCommandeRubis.getInstance().getListeCommande().containsKey(contentSplit[0]))) {
 				User user = event.getMessageAuthor().asUser().get();
-				event.getChannel().sendMessage("Nan c'est toi le " + content + " " + user.getMentionTag() + " !");
+				event.getChannel().sendMessage("Nan c'est toi le " + contentSplit[0] + " " + user.getMentionTag() + " !");
 			}
 		}	
 	}

@@ -30,8 +30,9 @@ public class Main {
 		FicheEspece ficheTapir = new FicheEspece("Tapir malais", "Le tapir malais est un mammifère vivant en Asie, plus précisement en Malaisie", (ArrayList) listFieldTapir, new File("C:/Users/Oydrey/Pictures/tapir.jpg"), "Affiche la fiche espèce du tapir malais");
 		
 		ListeCommandeRubis.getInstance().initCommande("!status", "Retourne la liste des membres du serveur en fonction de leur statut.");
-		ListeCommandeRubis.getInstance().initCommande("!musique url_youtube", "Rubis joue la musique Youtube passée en URL dans le salon vocal Musique? IL faut être VIP pour utiliser cette commande.");
+		ListeCommandeRubis.getInstance().initCommande("!musique", "Rubis joue la musique Youtube passée en URL dans le salon vocal Musique.  IL faut être VIP pour utiliser cette commande. \n Utilisation : !musique url_youtube");
 		ListeCommandeRubis.getInstance().initCommande("!checkVIP", "T'accorde le rôle VIP si tu es dans le serveur depuis au moins 7 jours.");
+		ListeCommandeRubis.getInstance().initCommande("!commandes", "Retourne la liste des commandes utilisables avec Rubis.");
 		
 		api.updateActivity("Rubis est de retour !");
 		
