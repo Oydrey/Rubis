@@ -29,18 +29,14 @@ public class Main {
 		listFieldTapir.add( new Field("Relation avec l'Homme :", "Neutre"));
 		FicheEspece ficheTapir = new FicheEspece("Tapir malais", "Le tapir malais est un mammifère vivant en Asie, plus précisement en Malaisie", (ArrayList) listFieldTapir, new File("C:/Users/Oydrey/Pictures/tapir.jpg"), "Affiche la fiche espèce du tapir malais");
 		
-		ListeCommandeRubis.getInstance().initCommande("!status", "Retourne la liste des membres du serveur en fonction de leur statut ");
-		ListeCommandeRubis.getInstance().initCommande("Salut", "Rubis te répond salut");
-		ListeCommandeRubis.getInstance().initCommande("!musique url_youtube", "Rubis joue la musique Youtube passée en URL dans le salon vocal Musique");
+		ListeCommandeRubis.getInstance().initCommande("!status", "Retourne la liste des membres du serveur en fonction de leur statut.");
+		ListeCommandeRubis.getInstance().initCommande("!musique url_youtube", "Rubis joue la musique Youtube passée en URL dans le salon vocal Musique? IL faut être VIP pour utiliser cette commande.");
+		ListeCommandeRubis.getInstance().initCommande("!checkVIP", "T'accorde le rôle VIP si tu es dans le serveur depuis au moins 7 jours.");
 		
 		api.updateActivity("Rubis est de retour !");
 		
 		api.addMessageCreateListener(event -> {
 			BotEvent.afficheFicheEspece(event);
-		});
-		
-		api.addMessageCreateListener(event -> {
-			BotEvent.answerSalut(event);
 		});
 		
 		api.addMessageCreateListener(event -> {
@@ -52,11 +48,19 @@ public class Main {
 		});
 		
 		api.addMessageCreateListener(event -> {
+			BotEvent.mdrr(event);
+		});
+		
+		api.addMessageCreateListener(event -> {
 			try {
 				BotEvent.playMusic(event);
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		});
+		
+		api.addMessageCreateListener(event -> {
+			BotEvent.checkVIP(event);
 		});
 			
 	}

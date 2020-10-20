@@ -1,12 +1,19 @@
 package discord_bot.rubis;
 
+import java.text.SimpleDateFormat;
+import java.time.Instant;
 import java.util.Collection;
+import java.util.Date;
+import java.util.List;
+import java.util.Map;
+import java.util.concurrent.TimeUnit;
 import java.util.regex.*;
 
 import org.javacord.api.audio.AudioSource;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
 import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
+import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
 import org.javacord.api.entity.user.User;
 import org.javacord.api.event.message.MessageCreateEvent;
@@ -41,13 +48,47 @@ public class BotEvent {
 		});
 	}
 	
-	public static void answerSalut(MessageCreateEvent event) {
-		if (event.getMessageContent().equalsIgnoreCase("Salut"))  {
-			Message  message = event.getMessage();
-			User user = message.getUserAuthor().get();
-			String mentionTag = user.getMentionTag();
-			event.getChannel().sendMessage("Salut " + mentionTag);
+	public static void checkVIP(MessageCreateEvent event) {
+		if (event.getMessageContent().equalsIgnoreCase("!checkVIP")) {
+			event.getMessage().delete();
+			User user = event.getMessageAuthor().asUser().get();
+			List<Role> roles = user.getRoles(event.getServer().get());
+			if (roles.size() == 1) {
+				Instant instant = user.getJoinedAtTimestamp(event.getServer().get()).get();
+				Date date = Date.from(instant);
+				Date today = new Date();
+				
+				SimpleDateFormat formatter = new SimpleDateFormat("dd/MM/yyyy HH:mm");
+				
+				long diffInMillies = Math.abs(today.getTime() - date.getTime());
+				long diff = TimeUnit.DAYS.convert(diffInMillies, TimeUnit.MILLISECONDS);
+				
+				if (diff < 7) {
+					event.getChannel().sendMessage("Tu ne peux pas être VIP pour le moment, attend encore " + (10-diff) + " jours.");
+				} else {
+					event.getChannel().sendMessage("Félicitation " + user.getMentionTag() + " tu es désormais VIP !");
+					List<Role> serverRoles = event.getServer().get().getRoles();
+					for (Role role : serverRoles) {
+						if (role.getName().equals("VIP")) {
+							user.addRole(role);
+						}
+					}
+				}
+			} else {
+				event.getChannel().sendMessage("Tu es déjà VIP.");
+			}
 		}
+	}
+	
+	public static void mdrr(MessageCreateEvent event) {
+		String content = event.getMessageContent();
+		char firstChar = content.charAt(0);
+		if (firstChar == '!') {
+			if (!(ListeCommandeRubis.getInstance().getListeCommande().containsKey(content))) {
+				User user = event.getMessageAuthor().asUser().get();
+				event.getChannel().sendMessage("Nan c'est toi le " + content + " " + user.getMentionTag() + " !");
+			}
+		}	
 	}
 	
 	public static void listUserStatus(MessageCreateEvent event) {
