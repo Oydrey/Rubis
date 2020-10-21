@@ -33,6 +33,9 @@ public class Main {
 		ListeCommandeRubis.getInstance().initCommande("!musique", "Rubis joue la musique Youtube passée en URL dans le salon vocal Musique.  IL faut être VIP pour utiliser cette commande. \n Utilisation : !musique url_youtube");
 		ListeCommandeRubis.getInstance().initCommande("!checkVIP", "T'accorde le rôle VIP si tu es dans le serveur depuis au moins 7 jours.");
 		ListeCommandeRubis.getInstance().initCommande("!commandes", "Retourne la liste des commandes utilisables avec Rubis.");
+		ListeCommandeRubis.getInstance().initCommande("!playlist", "Rubis joue la playlist dans salon vocal Musique. Il faut être VIP pour utiliser cette commande.");
+		ListeCommandeRubis.getInstance().initCommande("!affPlaylist", "Affiche la playlist de Rubis.");
+		ListeCommandeRubis.getInstance().initCommande("!addTrack", "Ajoute une musique à la playlist de Rubis. Il faut être VIP pour utiliser cette commande. \n Utilisation : !addTrack nom_musique auteur_musique url_youtube");
 		
 		api.updateActivity("Rubis est de retour !");
 		
@@ -61,8 +64,20 @@ public class Main {
 		});
 		
 		api.addMessageCreateListener(event -> {
+			BotEvent.affichePlaylist(event);
+		});
+		
+		api.addMessageCreateListener(event -> {
 			BotEvent.checkVIP(event);
 		});
+		
+		api.addMessageCreateListener(event -> {
+			BotEvent.addTrackInPlaylist(event);
+		});
+		
+		PlaylistRubis.getInstance().addTrack("Why we lose", "Cartoon", "https://www.youtube.com/watch?v=zyXmsVwZqX4");
+		PlaylistRubis.getInstance().addTrack("Change your ways", "High Maintenance", "https://www.youtube.com/watch?v=z3d77MqAeY8");
+		
 			
 	}
 

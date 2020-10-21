@@ -5,13 +5,11 @@ import java.time.Instant;
 import java.util.Collection;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.TimeUnit;
 import java.util.regex.*;
 
 import org.javacord.api.audio.AudioSource;
 import org.javacord.api.entity.channel.ServerVoiceChannel;
-import org.javacord.api.entity.message.Message;
 import org.javacord.api.entity.message.embed.EmbedBuilder;
 import org.javacord.api.entity.permission.Role;
 import org.javacord.api.entity.server.Server;
@@ -27,7 +25,7 @@ import com.sedmelluq.discord.lavaplayer.tools.FriendlyException;
 import com.sedmelluq.discord.lavaplayer.track.AudioPlaylist;
 import com.sedmelluq.discord.lavaplayer.track.AudioTrack;
 
-public class BotEvent {
+public abstract class BotEvent {
 
 	public static void afficheCommandesBot(MessageCreateEvent event) {
 		if (event.getMessageContent().equalsIgnoreCase("!commandes")) {
@@ -86,8 +84,9 @@ public class BotEvent {
 		if (firstChar == '!') {
 			String[] contentSplit = content.split(" ");
 			if (!(ListeCommandeRubis.getInstance().getListeCommande().containsKey(contentSplit[0]))) {
+				String message = contentSplit[0].substring(1);
 				User user = event.getMessageAuthor().asUser().get();
-				event.getChannel().sendMessage("Nan c'est toi le " + contentSplit[0] + " " + user.getMentionTag() + " !");
+				event.getChannel().sendMessage("Nan c'est toi le " + message + " " + user.getMentionTag() + " !");
 			}
 		}	
 	}
@@ -147,67 +146,94 @@ public class BotEvent {
 		}	
 	} 
 	
-	public static void playMusic(MessageCreateEvent event) throws Exception {
-		String[] splitMessage = event.getMessageContent().split(" ");	
-		
-		if ((splitMessage[0].equals("!musique")) || (splitMessage[0].equals("!playlist"))) {
-			String audio;
-			if (splitMessage.length == 2) {
-				Pattern pattern = Pattern.compile("https?:?/?/www?.youtube?.com?/watch?\\?v?=");
-				Matcher matcher = pattern.matcher(splitMessage[1]);
-				boolean find = matcher.find();
-				if (find) {
-					audio = splitMessage[1];
-				} else {
-					throw new Exception("The URL is not valable");
-				}
-			} else {
-				//TODO playlist
-				audio = "";
-			}
-			Collection<ServerVoiceChannel> channels = event.getApi().getServerVoiceChannelsByName("Musique");	
-			
-			for (ServerVoiceChannel channel : channels) {
-				channel.connect().thenAccept(audioConnection -> {
-					// Create a player manager
-					AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
-					playerManager.registerSourceManager(new YoutubeAudioSourceManager());
-					AudioPlayer player = playerManager.createPlayer();
-
-					// Create an audio source and add it to the audio connection's queue
-					AudioSource source = new LavaplayerAudioSource(event.getApi(), player);
-					audioConnection.setAudioSource(source);
-
-					AudioLoadResultHandler audioLoadResultHandler = new AudioLoadResultHandler() {
-					    @Override
-					    public void trackLoaded(AudioTrack track) {
-					        player.playTrack(track);
-					    }
-
-					    @Override
-					    public void playlistLoaded(AudioPlaylist playlist) {
-					        for (AudioTrack track : playlist.getTracks()) {
-					            player.playTrack(track);
-					        }
-					    }
-					    
-						@Override
-						public void noMatches() {
-							event.getChannel().sendMessage("La musique n'a pas été trouvée.");
-							
-						}
-						@Override
-						public void loadFailed(FriendlyException exception) {
-							event.getChannel().sendMessage("La musique n'a pas pu être chargée : " + exception.toString());
-						}
-					};
-					
-					// You can now use the AudioPlayer like you would normally do with Lavaplayer, e.g.,
-					playerManager.loadItem(audio, audioLoadResultHandler);
-				});
+	private static boolean userIsVIP(MessageCreateEvent event) {
+		User user =  event.getMessageAuthor().asUser().get();
+		List<Role> roles = user.getRoles(event.getServer().get());
+		for (Role role : roles) {
+			if (role.getName().equals("VIP")) {
+				return true;
 			}
 		}
-		
+		return false;
+	}
+	
+	public static void affichePlaylist(MessageCreateEvent event) {
+		if (event.getMessageContent().equalsIgnoreCase("!affPlaylist")) {
+			event.getMessage().delete();
+			EmbedBuilder embed = PlaylistRubis.getInstance().createEmbed();
+			event.getChannel().sendMessage(embed);
+		}
+	}
+	
+	public static void addTrackInPlaylist(MessageCreateEvent event) {
+		String[] splitContent = event.getMessageContent().split(" ");
+		if ((splitContent[0].equalsIgnoreCase("!addTrack")) && (splitContent.length == 4)) {
+			event.getMessage().delete();
+			PlaylistRubis.getInstance().addTrack(splitContent[1], splitContent[2], splitContent[3]);
+		}
+	}
+	
+	public static void playMusic(MessageCreateEvent event) throws Exception {
+		if (userIsVIP(event)) {
+			String[] splitMessage = event.getMessageContent().split(" ");	
+			
+			if ((splitMessage[0].equals("!musique")) || (splitMessage[0].equals("!playlist"))) {
+				String audio;
+				if ((splitMessage.length == 2) && (splitMessage[0].equals("!musique"))) {
+					Pattern pattern = Pattern.compile("https?:?/?/www?.youtube?.com?/watch?\\?v?=");
+					Matcher matcher = pattern.matcher(splitMessage[1]);
+					boolean find = matcher.find();
+					if (find) {
+						audio = splitMessage[1];
+					} else {
+						throw new Exception("The URL is not valable");
+					}
+				} else {
+					audio = PlaylistRubis.getInstance().getPlaylist().getName();
+				}
+				Collection<ServerVoiceChannel> channels = event.getApi().getServerVoiceChannelsByName("Musique");	
+				
+				for (ServerVoiceChannel channel : channels) {
+					channel.connect().thenAccept(audioConnection -> {
+						// Create a player manager
+						AudioPlayerManager playerManager = new DefaultAudioPlayerManager();
+						playerManager.registerSourceManager(new YoutubeAudioSourceManager());
+						AudioPlayer player = playerManager.createPlayer();
+	
+						// Create an audio source and add it to the audio connection's queue
+						AudioSource source = new LavaplayerAudioSource(event.getApi(), player);
+						audioConnection.setAudioSource(source);
+	
+						AudioLoadResultHandler audioLoadResultHandler = new AudioLoadResultHandler() {
+						    @Override
+						    public void trackLoaded(AudioTrack track) {
+						        player.playTrack(track);
+						    }
+	
+						    @Override
+						    public void playlistLoaded(AudioPlaylist playlist) {
+						        for (AudioTrack track : playlist.getTracks()) {
+						            player.playTrack(track);
+						        }
+						    }
+						    
+							@Override
+							public void noMatches() {
+								event.getChannel().sendMessage("La musique n'a pas été trouvée.");
+								
+							}
+							@Override
+							public void loadFailed(FriendlyException exception) {
+								event.getChannel().sendMessage("La musique n'a pas pu être chargée : " + exception.toString());
+							}
+						};
+						
+						// You can now use the AudioPlayer like you would normally do with Lavaplayer, e.g.,
+						playerManager.loadItem(audio, audioLoadResultHandler);
+					});
+				}
+			}
+		}
 	}
 	
 }
