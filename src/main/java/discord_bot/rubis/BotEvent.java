@@ -222,6 +222,7 @@ public abstract class BotEvent {
 								event.getChannel().sendMessage("La musique n'a pas été trouvée.");
 								
 							}
+							
 							@Override
 							public void loadFailed(FriendlyException exception) {
 								event.getChannel().sendMessage("La musique n'a pas pu être chargée : " + exception.toString());
